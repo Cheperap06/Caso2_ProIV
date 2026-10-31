@@ -1,4 +1,4 @@
-﻿namespace Caso2_ProIV
+﻿namespace Caso2_ProIV.Forms
 {
     partial class Form1
     {
