@@ -14,7 +14,8 @@ namespace Caso2_ProIV.Helpers
         private const int LongitudTelefono = 8;
 
         private static readonly Regex PatronCorreo =
-            new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled);
+            new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$",  
+                     RegexOptions.Compiled);
 
         // ---------- Formato ----------
 
@@ -93,9 +94,12 @@ namespace Caso2_ProIV.Helpers
         }
 
         /// <summary>True si el producto existe y tiene unidades suficientes para la cantidad pedida.</summary>
-        public static bool HayInventarioSuficiente(Producto producto, int cantidadSolicitada)
+        public static bool HayInventarioSuficiente(
+    Producto producto, int cantidadSolicitada)
         {
-            return producto != null && cantidadSolicitada <= producto.CantidadInventario;
+            return producto != null &&
+                   cantidadSolicitada > 0 &&
+                   cantidadSolicitada <= producto.CantidadInventario;
         }
     }
 }

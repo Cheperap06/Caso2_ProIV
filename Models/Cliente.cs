@@ -14,6 +14,7 @@ namespace Caso2_ProIV.Models
         public string Correo { get; set; }
         public string Direccion { get; set; }
         public DateTime FechaRegistro { get; set; }
+        public DateTime? FechaUltimaModificacion { get; set; }
         public EstadoCliente Estado { get; set; }
 
         public Cliente()

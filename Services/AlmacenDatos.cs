@@ -35,6 +35,12 @@ namespace Caso2_ProIV.Services
         /// <summary>Historial de operaciones. Recorrerlo muestra primero la más reciente (LIFO).</summary>
         public Stack<string> Historial { get; private set; }
 
+        /// <summary>
+        /// Almacena el último consecutivo utilizado para cada prefijo.
+        /// Permite evitar la reutilización de códigos de productos eliminados.
+        /// </summary>
+        public Dictionary<string, int> ConsecutivosProductos { get; private set; }
+
         private int _siguienteNumeroFactura;
 
         private AlmacenDatos()
@@ -50,6 +56,10 @@ namespace Caso2_ProIV.Services
             Historial = new Stack<string>();
 
             _siguienteNumeroFactura = 1;
+
+            // Inicializa los consecutivos de los códigos de productos.
+            ConsecutivosProductos = new Dictionary<string, int>(
+                StringComparer.OrdinalIgnoreCase);
 
             CargarCategoriasIniciales();
         }
@@ -103,16 +113,58 @@ namespace Caso2_ProIV.Services
             Clientes.Add(new Cliente("303330333", "María Jiménez Soto", "88883333", "maria.jimenez@correo.com",
                                      "Alajuela, Grecia", DateTime.Now, EstadoCliente.Inactivo));
 
-            AgregarProductoEjemplo(new Producto("REF-001", "Refrigeradora 14 pies", "Línea Blanca", "Samsung", 450000m, 8));
-            AgregarProductoEjemplo(new Producto("TV-001", "Televisor 50 pulgadas", "Video", "LG", 380000m, 3));
-            AgregarProductoEjemplo(new Producto("AUD-001", "Parlante Bluetooth", "Audio", "JBL", 45000m, 20));
-            AgregarProductoEjemplo(new Producto("LAP-001", "Laptop 15 pulgadas", "Tecnología", "HP", 520000m, 0));
+            AgregarProductoEjemplo(new Producto(
+    "LB-001", "Refrigeradora 14 pies",
+    "Línea Blanca", "Samsung", 450000m, 8));
+
+            AgregarProductoEjemplo(new Producto(
+                "VID-001", "Televisor 50 pulgadas",
+                "Video", "LG", 380000m, 3));
+
+            AgregarProductoEjemplo(new Producto(
+                "AUD-001", "Parlante Bluetooth",
+                "Audio", "JBL", 45000m, 20));
+
+            AgregarProductoEjemplo(new Producto(
+                "TEC-001", "Laptop 15 pulgadas",
+                "Tecnología", "HP", 520000m, 0));
         }
 
+        /// <summary>
+        /// Agrega un producto de ejemplo al inventario.
+        /// También actualiza el consecutivo de su prefijo
+        /// para evitar generar códigos ya utilizados.
+        /// </summary>
         private void AgregarProductoEjemplo(Producto producto)
         {
+            // Agrega la categoría si todavía no existe.
             Categorias.Add(producto.Categoria);
+
+            // Agrega el producto al inventario.
             Productos.Add(producto.Codigo, producto);
+
+            // Separa el prefijo del número consecutivo.
+            // Ejemplo: AUD-001 se divide en AUD y 001.
+            string[] partes = producto.Codigo.Split('-');
+
+            // Verifica que el código tenga dos partes
+            // y que la segunda sea un número válido.
+            if (partes.Length == 2 &&
+                int.TryParse(partes[1], out int numero))
+            {
+                string prefijo = partes[0];
+
+                // Obtiene el último consecutivo registrado.
+                int ultimo = 0;
+                ConsecutivosProductos.TryGetValue(prefijo, out ultimo);
+
+                // Conserva siempre el consecutivo mayor.
+                if (numero > ultimo)
+                {
+                    ConsecutivosProductos[prefijo] = numero;
+                }
+            }
         }
+
     }
 }
