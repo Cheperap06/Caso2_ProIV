@@ -154,11 +154,15 @@ namespace Caso2_ProIV.Services
             return true;
         }
 
+
         /// <summary>
         /// Consulta un producto mediante su código.
         /// Devuelve el producto encontrado o null si no existe.
+        /// Permite registrar la consulta en el historial.
         /// </summary>
-        public Producto ConsultarProducto(string codigo)
+        public Producto ConsultarProducto(
+            string codigo,
+            bool registrarEnHistorial = false)
         {
             // Verifica que el código no esté vacío.
             if (!Validador.CampoObligatorio(codigo))
@@ -173,20 +177,42 @@ namespace Caso2_ProIV.Services
             AlmacenDatos.Instancia.Productos.TryGetValue(
                 codigo, out Producto producto);
 
+            // Registra la consulta solamente cuando se solicita.
+            if (registrarEnHistorial)
+            {
+                AlmacenDatos.Instancia.RegistrarOperacion(
+                    "Consulta ejecutada - Producto: " + codigo);
+            }
+
             // Devuelve el producto encontrado o null.
             return producto;
         }
 
+
+
         /// <summary>
         /// Devuelve una lista con todos los productos
         /// registrados en el inventario.
+        /// Permite registrar la consulta en el historial.
         /// </summary>
-        public List<Producto> ObtenerProductos()
+        public List<Producto> ObtenerProductos(
+            bool registrarEnHistorial = false)
         {
             // Obtiene los productos almacenados en el Dictionary
             // y los convierte en una lista.
-            return AlmacenDatos.Instancia.Productos.Values.ToList();
+            List<Producto> productos =
+                AlmacenDatos.Instancia.Productos.Values.ToList();
+
+            // Registra la consulta cuando es solicitada.
+            if (registrarEnHistorial)
+            {
+                AlmacenDatos.Instancia.RegistrarOperacion(
+                    "Consulta ejecutada - Listado de productos");
+            }
+
+            return productos;
         }
+
 
         /// <summary>
         /// Modifica la información de un producto existente.

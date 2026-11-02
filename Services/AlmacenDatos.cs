@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Caso2_ProIV.Models;
+using Caso2_ProIV.Services;
 
 namespace Caso2_ProIV.Services
 {
@@ -40,12 +41,18 @@ namespace Caso2_ProIV.Services
         /// Permite evitar la reutilización de códigos de productos eliminados.
         /// </summary>
         public Dictionary<string, int> ConsecutivosProductos { get; private set; }
+        /// <summary>
+        /// Almacena los usuarios registrados en el sistema
+        /// Permite ingresar y hacer cambios según su rol
+        /// </summary>
+        public List<Usuario> Usuarios { get; private set; }
 
         private int _siguienteNumeroFactura;
 
         private AlmacenDatos()
         {
             Clientes = new List<Cliente>();
+            Usuarios = new List<Usuario>();
 
             // OrdinalIgnoreCase: "audio" y "Audio" cuentan como la misma clave/categoría.
             Productos = new Dictionary<string, Producto>(StringComparer.OrdinalIgnoreCase);
@@ -75,13 +82,30 @@ namespace Caso2_ProIV.Services
         }
 
         /// <summary>
-        /// Guarda una acción en el historial con fecha y hora.
-        /// Ejemplo: RegistrarOperacion("Cliente registrado: Ana Mora");
+        /// Registra una operación indicando la fecha,
+        /// hora, usuario responsable y descripción.
         /// </summary>
         public void RegistrarOperacion(string descripcion)
         {
-            Historial.Push(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + " - " + descripcion);
+            // Identifica quién realizó la operación.
+            string responsable = "Sistema";
+
+            // Si existe una sesión activa, obtiene los datos.
+            if (SesionActual.HaySesionActiva())
+            {
+                Usuario usuario = SesionActual.Usuario;
+
+                responsable = usuario.NombreUsuario +
+                              " (" + usuario.Rol + ")";
+            }
+
+            // Guarda la operación en la pila del historial.
+            Historial.Push(
+                DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") +
+                " - " + responsable +
+                " - " + descripcion);
         }
+
 
         /// <summary>Devuelve el número de factura que se asignará a la próxima venta.</summary>
         public int ObtenerSiguienteNumeroFactura()

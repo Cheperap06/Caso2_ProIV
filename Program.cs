@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Caso2_ProIV.Forms;
+using Caso2_ProIV.Models;
+using Caso2_ProIV.Services;
+using System;
 using System.Windows.Forms;
-using Caso2_ProIV.Forms;
 
 namespace Caso2_ProIV
+
 {
     internal static class Program
     {
@@ -15,6 +15,14 @@ namespace Caso2_ProIV
         [STAThread]
         static void Main()
         {
+            // Crear el servicio de usuarios.
+            UsuarioService usuarioService = new UsuarioService();
+
+            // Cargar las cuentas de ejemplo del administrador
+            // y del empleado al iniciar la aplicación.
+            usuarioService.CargarUsuariosIniciales();
+
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

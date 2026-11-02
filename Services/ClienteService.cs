@@ -46,13 +46,14 @@ namespace Caso2_ProIV.Services
             return true;
         }
 
-
         /// <summary>
         /// Consulta un cliente mediante su identificación.
-        /// Devuelve null si la identificación no es válida
-        /// o si el cliente no existe.
+        /// Permite registrar la consulta en el historial
+        /// cuando es solicitada directamente por el usuario.
         /// </summary>
-        public Cliente ConsultarCliente(string identificacion)
+        public Cliente ConsultarCliente(
+            string identificacion,
+            bool registrarEnHistorial = false)
         {
             // Verifica que la identificación no esté vacía.
             if (!Validador.CampoObligatorio(identificacion))
@@ -60,20 +61,44 @@ namespace Caso2_ProIV.Services
                 return null;
             }
 
-            // Consulta el cliente utilizando LINQ.
-            return AlmacenDatos.Instancia.Clientes
-                .FirstOrDefault(c => c.Identificacion == identificacion.Trim());
-        }
+            // Busca al cliente utilizando LINQ.
+            Cliente cliente = AlmacenDatos.Instancia.Clientes
+                .FirstOrDefault(c =>
+                    c.Identificacion == identificacion.Trim());
 
+            // Registra la consulta solamente cuando se solicita.
+            if (registrarEnHistorial)
+            {
+                AlmacenDatos.Instancia.RegistrarOperacion(
+                    "Consulta ejecutada - Cliente: " +
+                    identificacion.Trim());
+            }
+
+            return cliente;
+        }
 
 
         /// <summary>
         /// Devuelve la lista de todos los clientes registrados.
+        /// Permite registrar la consulta en el historial.
         /// </summary>
-        public List<Cliente> ObtenerClientes()
+        public List<Cliente> ObtenerClientes(
+            bool registrarEnHistorial = false)
         {
-            return AlmacenDatos.Instancia.Clientes.ToList();
+            // Obtiene una copia de la lista de clientes.
+            List<Cliente> clientes =
+                AlmacenDatos.Instancia.Clientes.ToList();
+
+            // Registra la consulta cuando es solicitada.
+            if (registrarEnHistorial)
+            {
+                AlmacenDatos.Instancia.RegistrarOperacion(
+                    "Consulta ejecutada - Listado de clientes");
+            }
+
+            return clientes;
         }
+
 
 
         /// <summary>

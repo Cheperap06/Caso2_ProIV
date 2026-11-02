@@ -13,4 +13,13 @@
         Disponible,
         Agotado
     }
+
+    /// <summary>
+    /// Define los roles de acceso de los usuarios del sistema.
+    /// </summary>
+    public enum RolUsuario
+    {
+        Administrador,
+        Empleado
+    }
 }
